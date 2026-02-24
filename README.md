@@ -8,3 +8,8 @@ Run program
 ```
 pipenv run python .\main.py
 ```
+
+Create binary for the program
+```
+create_binary.ps1
+```

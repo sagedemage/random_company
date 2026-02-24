@@ -1,2 +1,5 @@
 *.*~
 *.kra
+build/
+dist/
+main.spec
