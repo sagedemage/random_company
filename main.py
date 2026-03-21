@@ -5,14 +5,14 @@ from ttkthemes import ThemedStyle
 import csv
 
 def read_csv(file_path: str) -> list:
-    healthcare_companies = []
+    companies = []
 
-    with open(file_path) as csv_file:
+    with open(file_path, "r", encoding="utf-8") as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
-            healthcare_companies.append(row)
+            companies.append(row)
     
-    return healthcare_companies
+    return companies
 
 class App(tk.Frame):
     def __init__(self, master: tk.Tk):
@@ -44,12 +44,12 @@ class App(tk.Frame):
         button_2 = ttk.Button(text="Copy to clipboard", command=self.copy_to_clipboard)
         button_2.pack()
 
-        self.healthcare_companies = read_csv("data/healthcare_companies.csv")
+        self.companies = read_csv("data/largest_companies_by_market_cap.csv")
 
         master.iconbitmap("images/logo.ico")
     
     def random_company(self):
-        size = len(self.healthcare_companies)
+        size = len(self.companies)
 
         indices = []
         for i in range(12):
@@ -65,7 +65,7 @@ class App(tk.Frame):
 
         for i in range(len(indices)):
             index = indices[i]
-            company_row = self.healthcare_companies[index]
+            company_row = self.companies[index]
             self.list_box.insert(i+1, company_row["Name"])
 
     def copy_to_clipboard(self):
