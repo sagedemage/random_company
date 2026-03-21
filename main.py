@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedStyle
 import csv
+import html
 
 def read_csv(file_path: str) -> list:
     companies = []
@@ -16,8 +17,8 @@ def read_csv(file_path: str) -> list:
 
 class App(tk.Frame):
     def __init__(self, master: tk.Tk):
-        width = 300
-        height = 310
+        width = 335
+        height = 350
         master.title("Random Company")
         master.geometry(f"{width}x{height}")
         master.resizable(0, 0)
@@ -26,15 +27,16 @@ class App(tk.Frame):
 
         style.configure("TButton", padding=6)
         style.configure("TEntry", padding=3)
+        style.configure(".", font=("Helvetica", 12))
 
         super().__init__(master)
         self.pack()
 
-        self.label = ttk.Label(text="Random Companies: ")
+        self.label = ttk.Label(text="Random Companies: ", font=("Helvetica", 12))
         self.label.pack()
         self.company=tk.StringVar()
 
-        self.list_box = tk.Listbox(height = 12, width = 25, bg="#ffffff")
+        self.list_box = tk.Listbox(height = 12, width = 35, bg="#ffffff", font=("Helvetica", 12))
 
         self.list_box.pack()
 
@@ -66,7 +68,8 @@ class App(tk.Frame):
         for i in range(len(indices)):
             index = indices[i]
             company_row = self.companies[index]
-            self.list_box.insert(i+1, company_row["Name"])
+            company_name = html.unescape(company_row["Name"])
+            self.list_box.insert(i+1, company_name)
 
     def copy_to_clipboard(self):
         self.clipboard_clear()
