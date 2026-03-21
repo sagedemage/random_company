@@ -17,7 +17,7 @@ def read_csv(file_path: str) -> list:
 class App(tk.Frame):
     def __init__(self, master: tk.Tk):
         width = 300
-        height = 150
+        height = 310
         master.title("Random Company")
         master.geometry(f"{width}x{height}")
         master.resizable(0, 0)
@@ -30,13 +30,15 @@ class App(tk.Frame):
         super().__init__(master)
         self.pack()
 
-        self.label = ttk.Label(text="Company: ")
+        self.label = ttk.Label(text="Random Companies: ")
         self.label.pack()
         self.company=tk.StringVar()
-        self.entry = ttk.Entry(textvariable=self.company, width=25)
-        self.entry.pack()
 
-        button_1 = ttk.Button(text="Random Company", command=self.random_company)
+        self.list_box = tk.Listbox(height = 12, width = 25, bg="#ffffff")
+
+        self.list_box.pack()
+
+        button_1 = ttk.Button(text="Generate", command=self.random_company)
         button_1.pack()
 
         button_2 = ttk.Button(text="Copy to clipboard", command=self.copy_to_clipboard)
@@ -49,14 +51,29 @@ class App(tk.Frame):
     def random_company(self):
         size = len(self.healthcare_companies)
 
-        index = random.randrange(0, size-1, 1)
-        company_row = self.healthcare_companies[index]
+        indices = []
+        for i in range(12):
+            while True:
+                index = random.randrange(0, size-1, 1)
+                if index in indices:
+                    continue
+                else:
+                    indices.append(index)
+                    break
 
-        self.company.set(company_row["Name"])
+        self.list_box.delete(0,12)
+
+        for i in range(len(indices)):
+            index = indices[i]
+            company_row = self.healthcare_companies[index]
+            self.list_box.insert(i+1, company_row["Name"])
 
     def copy_to_clipboard(self):
         self.clipboard_clear()
-        self.clipboard_append(self.company.get())
+        index = self.list_box.curselection()
+        if len(index) != 0:
+            company = self.list_box.get(index)
+            self.clipboard_append(company)
 
 root = tk.Tk()
 app = App(root)
