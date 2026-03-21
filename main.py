@@ -4,6 +4,7 @@ from tkinter import ttk
 from ttkthemes import ThemedStyle
 import csv
 import html
+from pathlib import Path
 
 def read_csv(file_path: str) -> list:
     companies = []
@@ -14,6 +15,24 @@ def read_csv(file_path: str) -> list:
             companies.append(row)
     
     return companies
+
+
+def create_us_companies_csv(read_file_path: str, write_file_path: str):
+    companies = []
+    fieldnames = []
+
+    with open(read_file_path, "r", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file)
+        fieldnames = reader.fieldnames
+        for row in reader:
+            if row["country"] == "United States":
+                companies.append(row)
+
+    with open(write_file_path, "w", newline='', encoding="utf-8") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for company_row in companies:
+            writer.writerow(company_row)
 
 class App(tk.Frame):
     def __init__(self, master: tk.Tk):
@@ -46,7 +65,14 @@ class App(tk.Frame):
         button_2 = ttk.Button(text="Copy to clipboard", command=self.copy_to_clipboard)
         button_2.pack()
 
-        self.companies = read_csv("data/largest_companies_by_market_cap.csv")
+        read_csv_file = "original_data/largest_companies_by_market_cap.csv"
+        write_csv_file = "data/largest_us_companies_by_market_cap.csv"
+
+        check_write_file_path = Path(write_csv_file)
+        if check_write_file_path.exists() == False:
+            create_us_companies_csv(read_csv_file, write_csv_file)
+
+        self.companies = read_csv("data/largest_us_companies_by_market_cap.csv")
 
         master.iconbitmap("images/logo.ico")
     
