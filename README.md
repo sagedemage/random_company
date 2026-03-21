@@ -1,6 +1,6 @@
 # Random Company
 
-Get random company from a dataset
+Get random companies from a dataset
 
 ![App](./screenshots/app.PNG)
 
