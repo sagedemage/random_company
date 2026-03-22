@@ -5,6 +5,7 @@ from ttkthemes import ThemedStyle
 import csv
 import html
 from pathlib import Path
+import os
 
 def read_csv(file_path: str) -> list:
     companies = []
@@ -33,6 +34,18 @@ def create_us_companies_csv(read_file_path: str, write_file_path: str):
         writer.writeheader()
         for company_row in companies:
             writer.writerow(company_row)
+
+class FilePath:
+    def __init__(self, build_dir: str):
+        self.dev = True
+        self.build_dir = build_dir
+        if Path.is_dir(self.build_dir):
+            self.dev = False
+    def get(self, file_path: str):
+        if self.dev == False:
+            file_path = os.path.join(self.build_dir, file_path)
+
+        return file_path
 
 class App(tk.Frame):
     def __init__(self, master: tk.Tk):
@@ -65,16 +78,22 @@ class App(tk.Frame):
         button_2 = ttk.Button(text="Copy to clipboard", command=self.copy_to_clipboard)
         button_2.pack()
 
-        read_csv_file = "original_data/largest_companies_by_market_cap.csv"
-        write_csv_file = "data/largest_us_companies_by_market_cap.csv"
+        file_path = FilePath("_internal")
+
+        read_csv_file = file_path.get("original_data/largest_companies_by_market_cap.csv")
+        write_csv_file = file_path.get("data/largest_us_companies_by_market_cap.csv")
 
         check_write_file_path = Path(write_csv_file)
         if check_write_file_path.exists() == False:
             create_us_companies_csv(read_csv_file, write_csv_file)
 
-        self.companies = read_csv("data/largest_us_companies_by_market_cap.csv")
+        read_csv_file = file_path.get("data/largest_us_companies_by_market_cap.csv")
 
-        master.iconbitmap("images/logo.ico")
+        self.companies = read_csv(read_csv_file)
+
+        logo_path = file_path.get("images/logo.ico")
+
+        master.iconbitmap(logo_path)
     
     def random_company(self):
         size = len(self.companies)
