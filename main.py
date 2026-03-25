@@ -6,6 +6,8 @@ import csv
 import html
 from pathlib import Path
 import os
+import pywinstyles
+import sys
 
 def read_csv(file_path: str) -> list:
     companies = []
@@ -35,6 +37,20 @@ def create_us_companies_csv(read_file_path: str, write_file_path: str):
         for company_row in companies:
             writer.writerow(company_row)
 
+def apply_theme_to_titlebar(root, style):
+    version = sys.getwindowsversion()
+
+    if version.major == 10 and version.build >= 22000:
+        # Set the title bar color to the background color on Windows 11 for better appearance
+        pywinstyles.change_header_color(root, "#1c1c1c" if style == "dark" else "#fafafa")
+    elif version.major == 10:
+        # "dark" or "normal"
+        pywinstyles.apply_style(root, style)
+
+        # A hacky to update the color of the title bar on Windows 10
+        root.wm_attributes("-alpha", 0.99)
+        root.wm_attributes("-alpha", 1)
+
 class FilePath:
     def __init__(self, build_dir: str):
         self.dev = True
@@ -61,6 +77,8 @@ class App(tk.Frame):
         master.title("Random Company")
         master.geometry(f"{width}x{height}")
         master.resizable(0, 0)
+
+        apply_theme_to_titlebar(master, "dark")
 
         bg_color = "#000000"
         fg_color = "#ffffff"

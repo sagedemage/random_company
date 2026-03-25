@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 ttkthemes = "*"
 pyinstaller = "*"
+pywinstyles = "*"
 
 [dev-packages]
 
