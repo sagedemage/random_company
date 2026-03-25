@@ -47,6 +47,13 @@ class FilePath:
 
         return file_path
 
+class Theme:
+    def __init__(self, bg, fg, font, padding):
+        self.bg = bg
+        self.fg = fg
+        self.font = font
+        self.padding = padding
+
 class App(tk.Frame):
     def __init__(self, master: tk.Tk):
         width = 335
@@ -55,27 +62,31 @@ class App(tk.Frame):
         master.geometry(f"{width}x{height}")
         master.resizable(0, 0)
 
-        style = ThemedStyle(master, theme="breeze")
+        bg_color = "#000000"
+        fg_color = "#ffffff"
+        font = ("Helvetica", 12)
+        padding = 6
+        theme = Theme(bg_color, fg_color, font, padding)
+        master.config(bg=theme.bg)
 
-        style.configure("TButton", padding=6)
-        style.configure("TEntry", padding=3)
-        style.configure(".", font=("Helvetica", 12))
+        style = ThemedStyle(master, theme="breeze")
+        style.configure(".", font=theme.font, foreground=theme.fg, background=theme.bg)
 
         super().__init__(master)
         self.pack()
 
-        self.label = ttk.Label(text="Random Companies: ", font=("Helvetica", 12))
+        self.label = ttk.Label(text="Random Companies: ", font=theme.font)
         self.label.pack()
         self.company=tk.StringVar()
 
-        self.list_box = tk.Listbox(height = 12, width = 35, bg="#ffffff", font=("Helvetica", 12))
+        self.list_box = tk.Listbox(height = 12, width = 35, bg=theme.bg, fg=theme.fg, font=theme.font)
 
         self.list_box.pack()
 
-        button_1 = ttk.Button(text="Generate", command=self.random_company)
+        button_1 = tk.Button(text="Generate", command=self.random_company, bg="#444444", fg=theme.fg, font=theme.font, padx=theme.padding, pady=theme.padding)
         button_1.pack()
 
-        button_2 = ttk.Button(text="Copy to clipboard", command=self.copy_to_clipboard)
+        button_2 = tk.Button(text="Copy to clipboard", command=self.copy_to_clipboard, bg="#444444", fg=theme.fg, font=theme.font, padx=theme.padding, pady=theme.padding)
         button_2.pack()
 
         file_path = FilePath("_internal")
