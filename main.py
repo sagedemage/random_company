@@ -9,6 +9,8 @@ import os
 import pywinstyles
 import sys
 
+import wx
+
 def read_csv(file_path: str) -> list:
     companies = []
 
@@ -70,7 +72,7 @@ class Theme:
         self.font = font
         self.padding = padding
 
-class App(tk.Frame):
+class AppOld(tk.Frame):
     def __init__(self, master: tk.Tk):
         width = 335
         height = 350
@@ -152,6 +154,64 @@ class App(tk.Frame):
             company = self.list_box.get(index)
             self.clipboard_append(company)
 
-root = tk.Tk()
-app = App(root)
-app.mainloop()
+class WxApp(wx.Frame):
+    def __init__(self, *args, **kw):
+        super(WxApp, self).__init__(*args, **kw)
+
+        panel = wx.Panel(self)
+
+        text = wx.StaticText(panel, label="Hello World!")
+        font = text.GetFont()
+        font.PointSize += 10
+        font = font.Bold()
+        text.SetFont(font)
+
+        box_sizer = wx.BoxSizer(wx.VERTICAL)
+        box_sizer.Add(text, wx.SizerFlags().Border(wx.TOP|wx.LEFT, 25))
+        panel.SetSizer(box_sizer)
+
+        self.make_menu_bar()
+
+        self.CreateStatusBar()
+        self.SetStatusText("Welcome to wxPython!")
+
+    def make_menu_bar(self):
+        file_menu = wx.Menu()
+        hello_item = file_menu.Append(-1, "&Hello...\tCtrl-H", "Help string shown in status bar for this menu item")
+        file_menu.AppendSeparator()
+        exit_item = file_menu.Append(wx.ID_EXIT)
+        help_menu = wx.Menu()
+        about_item = help_menu.Append(wx.ID_ABOUT)
+
+        menu_bar = wx.MenuBar()
+        menu_bar.Append(file_menu, "&File")
+        menu_bar.Append(help_menu, "&Help")
+
+        self.SetMenuBar(menu_bar)
+
+        self.Bind(wx.EVT_MENU, self.on_hello, hello_item)
+        self.Bind(wx.EVT_MENU, self.on_exit, exit_item)
+        self.Bind(wx.EVT_MENU, self.on_about, about_item)
+
+    def on_exit(self, event):
+        self.Close(True)
+
+    def on_hello(self, event):
+        wx.MessageBox("Hello again from wxPython")
+
+    def on_about(self, event):
+        wx.MessageBox("This is a wxPython Hello World sample", "About Hello World 2", wx.OK|wx.ICON_INFORMATION)
+
+def main():
+    # Old code
+    #root = tk.Tk()
+    #app = AppOld(root)
+    #app.mainloop()
+
+    app = wx.App()
+    frame = WxApp(None, title="Hello World 2")
+    frame.Show()
+    app.MainLoop()
+
+if __name__ == "__main__":
+    main()
