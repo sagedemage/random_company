@@ -158,22 +158,53 @@ class WxApp(wx.Frame):
     def __init__(self, *args, **kw):
         super(WxApp, self).__init__(*args, **kw)
 
+        window_width = 300
+        window_height = 350
+        window_size = wx.Size(window_width, window_height)
+        self.SetSize(window_size)
+
         panel = wx.Panel(self)
 
-        text = wx.StaticText(panel, label="Hello World!")
-        font = text.GetFont()
-        font.PointSize += 10
-        font = font.Bold()
-        text.SetFont(font)
+        text = wx.StaticText(panel, label="Random Companies: ")
+
+        list_box_width = 200
+        list_box_height = 190
+        list_box_size = wx.Size(list_box_width, list_box_height)
+        self.list_box = wx.ListBox(panel, size=list_box_size)
+
+        generate_button = wx.Button(panel, label="Generate", size=wx.DefaultSize)
+        copy_to_clipboard_button = wx.Button(panel, label="Copy to Clipboard", size=wx.DefaultSize)
 
         box_sizer = wx.BoxSizer(wx.VERTICAL)
-        box_sizer.Add(text, wx.SizerFlags().Border(wx.TOP|wx.LEFT, 25))
+        box_sizer.Add(text, 0, wx.ALIGN_CENTER_HORIZONTAL, 10)
+        box_sizer.Add(self.list_box, 0, wx.ALIGN_CENTER_HORIZONTAL, 10)
+        box_sizer.Add(generate_button, 0, wx.ALIGN_CENTER_HORIZONTAL, 10)
+        box_sizer.Add(copy_to_clipboard_button, 0, wx.ALIGN_CENTER_HORIZONTAL, 10)
         panel.SetSizer(box_sizer)
 
         self.make_menu_bar()
 
         self.CreateStatusBar()
         self.SetStatusText("Welcome to wxPython!")
+
+        icon = wx.Icon("images/logo.ico", type=wx.BITMAP_TYPE_ICO)
+        self.SetIcon(icon)
+
+        self.Bind(wx.EVT_BUTTON, self.random_company, generate_button)
+        self.Bind(wx.EVT_BUTTON, self.copy_to_clipboard, copy_to_clipboard_button)
+
+        file_path = FilePath("_internal")
+
+        read_csv_file = file_path.get("original_data/largest_companies_by_market_cap.csv")
+        write_csv_file = file_path.get("data/largest_us_companies_by_market_cap.csv")
+
+        check_write_file_path = Path(write_csv_file)
+        if check_write_file_path.exists() == False:
+            create_us_companies_csv(read_csv_file, write_csv_file)
+
+        read_csv_file = file_path.get("data/largest_us_companies_by_market_cap.csv")
+
+        self.companies = read_csv(read_csv_file)
 
     def make_menu_bar(self):
         file_menu = wx.Menu()
@@ -202,6 +233,36 @@ class WxApp(wx.Frame):
     def on_about(self, event):
         wx.MessageBox("This is a wxPython Hello World sample", "About Hello World 2", wx.OK|wx.ICON_INFORMATION)
 
+    def random_company(self, event):
+        size = len(self.companies)
+
+        indices = []
+        for i in range(12):
+            while True:
+                index = random.randrange(0, size-1, 1)
+                if index in indices:
+                    continue
+                else:
+                    indices.append(index)
+                    break
+
+        self.list_box.Clear()
+
+        for i in range(len(indices)):
+            index = indices[i]
+            company_row = self.companies[index]
+            company_name = html.unescape(company_row["Name"])
+            self.list_box.Append(company_name)
+
+    def copy_to_clipboard(self, event):
+        index = self.list_box.GetSelection()
+        if index != wx.NOT_FOUND:
+            if wx.TheClipboard.Open():
+                item_label = self.list_box.GetString(index)
+                text = wx.TextDataObject(item_label)
+                wx.TheClipboard.SetData(text)
+                wx.TheClipboard.Close()
+
 def main():
     # Old code
     #root = tk.Tk()
@@ -209,7 +270,7 @@ def main():
     #app.mainloop()
 
     app = wx.App()
-    frame = WxApp(None, title="Hello World 2")
+    frame = WxApp(None, title="Random Company")
     frame.Show()
     app.MainLoop()
 
