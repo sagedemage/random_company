@@ -82,7 +82,7 @@ class MyFrame(wx.Frame):
         panel.SetSizer(box_sizer)
 
         file_menu = wx.Menu()
-        hello_item = file_menu.Append(-1, "&Hello...\tCtrl-H", "Help string shown in status bar for this menu item")
+        usage_item = file_menu.Append(-1, "&Usage\tCtrl-H", "Help string shown in status bar for this menu item")
         file_menu.AppendSeparator()
         exit_item = file_menu.Append(wx.ID_EXIT)
         help_menu = wx.Menu()
@@ -95,7 +95,7 @@ class MyFrame(wx.Frame):
         self.SetMenuBar(menu_bar)
 
         self.CreateStatusBar()
-        self.SetStatusText("Welcome to wxPython!")
+        self.SetStatusText("Random company program")
 
         file_path = FilePath("_internal")
 
@@ -103,7 +103,7 @@ class MyFrame(wx.Frame):
         icon = wx.Icon(logo_path, type=wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
-        self.Bind(wx.EVT_MENU, self.on_hello, hello_item)
+        self.Bind(wx.EVT_MENU, self.on_usage, usage_item)
         self.Bind(wx.EVT_MENU, self.on_exit, exit_item)
         self.Bind(wx.EVT_MENU, self.on_about, about_item)
         self.Bind(wx.EVT_BUTTON, self.random_company, generate_button)
@@ -123,11 +123,11 @@ class MyFrame(wx.Frame):
     def on_exit(self, event):
         self.Close(True)
 
-    def on_hello(self, event):
-        wx.MessageBox("Hello again from wxPython")
+    def on_usage(self, event):
+        wx.MessageBox("Click the generate button to get random companies. Copy one of the fields with the copy to clipboard button.")
 
     def on_about(self, event):
-        wx.MessageBox("This is a wxPython Hello World sample", "About Hello World 2", wx.OK|wx.ICON_INFORMATION)
+        wx.MessageBox("This is a program to get random companies.", "About", wx.OK|wx.ICON_INFORMATION)
 
     def random_company(self, event):
         size = len(self.companies)
