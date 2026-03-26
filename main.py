@@ -109,8 +109,6 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.random_company, generate_button)
         self.Bind(wx.EVT_BUTTON, self.copy_to_clipboard, copy_to_clipboard_button)
 
-        #self.set_dark_mode(self)
-
         file_path = FilePath("_internal")
 
         read_csv_file = file_path.get("original_data/largest_companies_by_market_cap.csv")
@@ -162,12 +160,6 @@ class MyFrame(wx.Frame):
                 text = wx.TextDataObject(item_label)
                 wx.TheClipboard.SetData(text)
                 wx.TheClipboard.Close()
-
-    def set_dark_mode(self, control):
-        for child in control.GetChildren():
-            child.SetForegroundColour(self.dark_fg_color)
-            child.SetBackgroundColour(self.dark_bg_color)
-            self.set_dark_mode(child)
 
 
 def main():
