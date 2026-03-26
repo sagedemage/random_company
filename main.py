@@ -45,9 +45,9 @@ class FilePath:
 
         return file_path
 
-class WxApp(wx.Frame):
+class MyFrame(wx.Frame):
     def __init__(self, *args, **kw):
-        super(WxApp, self).__init__(*args, **kw)
+        super(MyFrame, self).__init__(*args, **kw)
 
         window_width = 300
         window_height = 350
@@ -61,6 +61,9 @@ class WxApp(wx.Frame):
                        wx.CLIP_CHILDREN)
 
         self.SetWindowStyleFlag(frame_style)
+
+        self.dark_bg_color = "#252525"
+        self.dark_fg_color = "#FFFFFF"
 
         panel = wx.Panel(self)
 
@@ -105,6 +108,8 @@ class WxApp(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_about, about_item)
         self.Bind(wx.EVT_BUTTON, self.random_company, generate_button)
         self.Bind(wx.EVT_BUTTON, self.copy_to_clipboard, copy_to_clipboard_button)
+
+        #self.set_dark_mode(self)
 
         file_path = FilePath("_internal")
 
@@ -158,10 +163,17 @@ class WxApp(wx.Frame):
                 wx.TheClipboard.SetData(text)
                 wx.TheClipboard.Close()
 
+    def set_dark_mode(self, control):
+        for child in control.GetChildren():
+            child.SetForegroundColour(self.dark_fg_color)
+            child.SetBackgroundColour(self.dark_bg_color)
+            self.set_dark_mode(child)
+
+
 def main():
     app = wx.App()
-    frame = WxApp(None, title="Random Company")
-    frame.Show()
+    frame = MyFrame(None, title="Random Company")
+    frame.Show(True)
     app.MainLoop()
 
 if __name__ == "__main__":
