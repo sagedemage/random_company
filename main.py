@@ -81,7 +81,18 @@ class WxApp(wx.Frame):
         box_sizer.Add(copy_to_clipboard_button, 0, wx.ALIGN_CENTER_HORIZONTAL, 10)
         panel.SetSizer(box_sizer)
 
-        self.make_menu_bar()
+        file_menu = wx.Menu()
+        hello_item = file_menu.Append(-1, "&Hello...\tCtrl-H", "Help string shown in status bar for this menu item")
+        file_menu.AppendSeparator()
+        exit_item = file_menu.Append(wx.ID_EXIT)
+        help_menu = wx.Menu()
+        about_item = help_menu.Append(wx.ID_ABOUT)
+
+        menu_bar = wx.MenuBar()
+        menu_bar.Append(file_menu, "&File")
+        menu_bar.Append(help_menu, "&Help")
+
+        self.SetMenuBar(menu_bar)
 
         self.CreateStatusBar()
         self.SetStatusText("Welcome to wxPython!")
@@ -89,6 +100,9 @@ class WxApp(wx.Frame):
         icon = wx.Icon("images/logo.ico", type=wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
+        self.Bind(wx.EVT_MENU, self.on_hello, hello_item)
+        self.Bind(wx.EVT_MENU, self.on_exit, exit_item)
+        self.Bind(wx.EVT_MENU, self.on_about, about_item)
         self.Bind(wx.EVT_BUTTON, self.random_company, generate_button)
         self.Bind(wx.EVT_BUTTON, self.copy_to_clipboard, copy_to_clipboard_button)
 
@@ -104,24 +118,6 @@ class WxApp(wx.Frame):
         read_csv_file = file_path.get("data/largest_us_companies_by_market_cap.csv")
 
         self.companies = read_csv(read_csv_file)
-
-    def make_menu_bar(self):
-        file_menu = wx.Menu()
-        hello_item = file_menu.Append(-1, "&Hello...\tCtrl-H", "Help string shown in status bar for this menu item")
-        file_menu.AppendSeparator()
-        exit_item = file_menu.Append(wx.ID_EXIT)
-        help_menu = wx.Menu()
-        about_item = help_menu.Append(wx.ID_ABOUT)
-
-        menu_bar = wx.MenuBar()
-        menu_bar.Append(file_menu, "&File")
-        menu_bar.Append(help_menu, "&Help")
-
-        self.SetMenuBar(menu_bar)
-
-        self.Bind(wx.EVT_MENU, self.on_hello, hello_item)
-        self.Bind(wx.EVT_MENU, self.on_exit, exit_item)
-        self.Bind(wx.EVT_MENU, self.on_about, about_item)
 
     def on_exit(self, event):
         self.Close(True)
