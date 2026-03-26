@@ -82,7 +82,7 @@ class MyFrame(wx.Frame):
         panel.SetSizer(box_sizer)
 
         file_menu = wx.Menu()
-        usage_item = file_menu.Append(-1, "&Usage\tCtrl-H", "Help string shown in status bar for this menu item")
+        usage_item = file_menu.Append(-1, "&Usage\tCtrl-H", "Get instructions to use the program")
         file_menu.AppendSeparator()
         exit_item = file_menu.Append(wx.ID_EXIT)
         help_menu = wx.Menu()
