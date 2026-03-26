@@ -100,7 +100,10 @@ class MyFrame(wx.Frame):
         self.CreateStatusBar()
         self.SetStatusText("Welcome to wxPython!")
 
-        icon = wx.Icon("images/logo.ico", type=wx.BITMAP_TYPE_ICO)
+        file_path = FilePath("_internal")
+
+        logo_path = file_path.get("images/logo.ico")
+        icon = wx.Icon(logo_path, type=wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
         self.Bind(wx.EVT_MENU, self.on_hello, hello_item)
@@ -108,8 +111,6 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_about, about_item)
         self.Bind(wx.EVT_BUTTON, self.random_company, generate_button)
         self.Bind(wx.EVT_BUTTON, self.copy_to_clipboard, copy_to_clipboard_button)
-
-        file_path = FilePath("_internal")
 
         read_csv_file = file_path.get("original_data/largest_companies_by_market_cap.csv")
         write_csv_file = file_path.get("data/largest_us_companies_by_market_cap.csv")
