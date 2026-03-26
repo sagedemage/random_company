@@ -4,9 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-ttkthemes = "*"
 pyinstaller = "*"
-pywinstyles = "*"
+wxpython = "*"
 
 [dev-packages]
 
