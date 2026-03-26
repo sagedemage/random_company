@@ -62,9 +62,6 @@ class MyFrame(wx.Frame):
 
         self.SetWindowStyleFlag(frame_style)
 
-        self.dark_bg_color = "#252525"
-        self.dark_fg_color = "#FFFFFF"
-
         panel = wx.Panel(self)
 
         text = wx.StaticText(panel, label="Random Companies: ")
