@@ -53,6 +53,14 @@ class WxApp(wx.Frame):
         window_height = 350
         window_size = wx.Size(window_width, window_height)
         self.SetSize(window_size)
+        frame_style = (wx.SYSTEM_MENU |
+                       wx.MINIMIZE_BOX |
+                       wx.MAXIMIZE_BOX |
+                       wx.CLOSE_BOX |
+                       wx.CAPTION |
+                       wx.CLIP_CHILDREN)
+
+        self.SetWindowStyleFlag(frame_style)
 
         panel = wx.Panel(self)
 
