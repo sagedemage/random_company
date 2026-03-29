@@ -3,7 +3,8 @@ import csv
 import html
 from pathlib import Path
 import os
-import wx
+from PySide6 import QtCore, QtWidgets, QtGui
+import sys
 
 def read_csv(file_path: str) -> list:
     companies = []
@@ -45,69 +46,57 @@ class FilePath:
 
         return file_path
 
-class MyFrame(wx.Frame):
-    def __init__(self, *args, **kw):
-        super(MyFrame, self).__init__(*args, **kw)
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self, app: QtWidgets.QApplication):
+        super().__init__()
+        self.app = app
+        # Set the application’s GUI style to dark mode
+        self.app.setStyle("fusion")
+
+        self.clipboard = self.app.clipboard()
+
+        window_title = "Random Company"
+        self.setWindowTitle(window_title)
 
         window_width = 300
         window_height = 350
-        window_size = wx.Size(window_width, window_height)
-        self.SetSize(window_size)
-        frame_style = (wx.SYSTEM_MENU |
-                       wx.MINIMIZE_BOX |
-                       wx.MAXIMIZE_BOX |
-                       wx.CLOSE_BOX |
-                       wx.CAPTION |
-                       wx.CLIP_CHILDREN)
-
-        self.SetWindowStyleFlag(frame_style)
-
-        panel = wx.Panel(self)
-
-        text = wx.StaticText(panel, label="Random Companies: ")
-
-        list_box_width = 200
-        list_box_height = 190
-        list_box_size = wx.Size(list_box_width, list_box_height)
-        self.list_box = wx.ListBox(panel, size=list_box_size)
-
-        generate_button = wx.Button(panel, label="Generate", size=wx.DefaultSize)
-        copy_to_clipboard_button = wx.Button(panel, label="Copy to Clipboard", size=wx.DefaultSize)
-
-        box_sizer = wx.BoxSizer(wx.VERTICAL)
-        box_sizer.Add(text, 0, wx.ALIGN_CENTER_HORIZONTAL, 10)
-        box_sizer.Add(self.list_box, 0, wx.ALIGN_CENTER_HORIZONTAL, 10)
-        box_sizer.Add(generate_button, 0, wx.ALIGN_CENTER_HORIZONTAL, 10)
-        box_sizer.Add(copy_to_clipboard_button, 0, wx.ALIGN_CENTER_HORIZONTAL, 10)
-        panel.SetSizer(box_sizer)
-
-        file_menu = wx.Menu()
-        usage_item = file_menu.Append(-1, "&Usage\tCtrl-H", "Get instructions to use the program")
-        file_menu.AppendSeparator()
-        exit_item = file_menu.Append(wx.ID_EXIT)
-        help_menu = wx.Menu()
-        about_item = help_menu.Append(wx.ID_ABOUT)
-
-        menu_bar = wx.MenuBar()
-        menu_bar.Append(file_menu, "&File")
-        menu_bar.Append(help_menu, "&Help")
-
-        self.SetMenuBar(menu_bar)
-
-        self.CreateStatusBar()
-        self.SetStatusText("Random company program")
+        window_size = QtCore.QSize(window_width, window_height)
+        self.setFixedSize(window_size)
 
         file_path = FilePath("_internal")
-
         logo_path = file_path.get("images/logo.ico")
-        icon = wx.Icon(logo_path, type=wx.BITMAP_TYPE_ICO)
-        self.SetIcon(icon)
 
-        self.Bind(wx.EVT_MENU, self.on_usage, usage_item)
-        self.Bind(wx.EVT_MENU, self.on_exit, exit_item)
-        self.Bind(wx.EVT_MENU, self.on_about, about_item)
-        self.Bind(wx.EVT_BUTTON, self.random_company, generate_button)
-        self.Bind(wx.EVT_BUTTON, self.copy_to_clipboard, copy_to_clipboard_button)
+        icon = QtGui.QIcon(logo_path)
+        self.setWindowIcon(icon)
+
+        self.text = QtWidgets.QLabel("Random Companies: ", alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+
+        self.list_box = QtWidgets.QListView()
+        list_box_height = 200
+        self.list_box.setMinimumHeight(list_box_height)
+        self.list_box.setMaximumHeight(list_box_height)
+        self.model = QtGui.QStandardItemModel()
+        self.list_box.setModel(self.model)
+
+        self.generate_button = QtWidgets.QPushButton("Generate")
+        button_width = 150
+        button_height = 38
+        button_size = QtCore.QSize(button_width, button_height)
+        self.generate_button.setFixedSize(button_size)
+        self.copy_to_clipboard_button = QtWidgets.QPushButton("Copy to Clipboard")
+        self.copy_to_clipboard_button.setFixedSize(button_size)
+
+        self.generate_button.clicked.connect(self.random_company)
+        self.copy_to_clipboard_button.clicked.connect(self.copy_to_clipboard)
+
+        central_widget = QtWidgets.QWidget()
+        self.layout = QtWidgets.QVBoxLayout(central_widget)
+        self.layout.addWidget(self.text, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.list_box, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.generate_button, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.copy_to_clipboard_button, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+
+        self.setCentralWidget(central_widget)
 
         read_csv_file = file_path.get("original_data/largest_companies_by_market_cap.csv")
         write_csv_file = file_path.get("data/largest_us_companies_by_market_cap.csv")
@@ -120,16 +109,8 @@ class MyFrame(wx.Frame):
 
         self.companies = read_csv(read_csv_file)
 
-    def on_exit(self, event):
-        self.Close(True)
-
-    def on_usage(self, event):
-        wx.MessageBox("Click the generate button to get random companies. Copy one of the fields with the copy to clipboard button.")
-
-    def on_about(self, event):
-        wx.MessageBox("This is a program to get random companies.", "About", wx.OK|wx.ICON_INFORMATION)
-
-    def random_company(self, event):
+    @QtCore.Slot()
+    def random_company(self):
         size = len(self.companies)
 
         indices = []
@@ -142,29 +123,32 @@ class MyFrame(wx.Frame):
                     indices.append(index)
                     break
 
-        self.list_box.Clear()
+        self.model.clear()
 
         for i in range(len(indices)):
             index = indices[i]
             company_row = self.companies[index]
-            company_name = html.unescape(company_row["Name"])
-            self.list_box.Append(company_name)
+            company_name: str = html.unescape(company_row["Name"])
+            item = QtGui.QStandardItem(company_name)
+            self.model.appendRow(item)
 
-    def copy_to_clipboard(self, event):
-        index = self.list_box.GetSelection()
-        if index != wx.NOT_FOUND:
-            if wx.TheClipboard.Open():
-                item_label = self.list_box.GetString(index)
-                text = wx.TextDataObject(item_label)
-                wx.TheClipboard.SetData(text)
-                wx.TheClipboard.Close()
+    @QtCore.Slot()
+    def copy_to_clipboard(self):
+        indexes = self.list_box.selectedIndexes()
 
+        if len(indexes) != 0:
+            item_label = indexes[0]
+            text = item_label.data()
+            self.clipboard.setText(text)
 
 def main():
-    app = wx.App()
-    frame = MyFrame(None, title="Random Company")
-    frame.Show(True)
-    app.MainLoop()
+    app = QtWidgets.QApplication([])
+
+    window = MainWindow(app)
+    window.show()
+
+    sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()
