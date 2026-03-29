@@ -50,6 +50,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, app: QtWidgets.QApplication):
         super().__init__()
         self.app = app
+        # Set the application’s GUI style to dark mode
         self.app.setStyle("fusion")
 
         self.clipboard = self.app.clipboard()
