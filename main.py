@@ -50,6 +50,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, app: QtWidgets.QApplication):
         super().__init__()
         self.app = app
+        self.app.setStyle("fusion")
 
         self.clipboard = self.app.clipboard()
 
@@ -141,7 +142,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 def main():
     app = QtWidgets.QApplication([])
-    app.setStyle("fusion")
 
     window = MainWindow(app)
     window.show()
