@@ -3,3 +3,4 @@
 build/
 dist/
 data/largest_us_companies_by_market_cap.csv
+__pycache__/

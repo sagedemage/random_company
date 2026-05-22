@@ -1,1 +1,1 @@
-pipenv run pyinstaller main.spec --noconfirm
+poetry run pyinstaller main.spec --noconfirm
