@@ -4,14 +4,19 @@ Get random companies from a dataset
 
 ![App](./screenshots/app.PNG)
 
-Run program
+Run the program
 ```
-pipenv run python .\main.py
+poetry run python .\main.py
 ```
 
 Create binary for the program
 ```
 create_binary.ps1
+```
+
+Check for dependency issues
+```
+poetry run deptry .
 ```
 
 ## Dataset
